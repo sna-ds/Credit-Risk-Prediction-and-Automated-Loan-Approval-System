@@ -33,7 +33,8 @@ styles = {
         "background-color": "white",
         "color": "royalblue",
         "font-weight": "bold",
-        "padding": "18px",
+        "padding": "14px",
+        "border-radius": "6px",
     },
 }
 
