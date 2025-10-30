@@ -9,3 +9,4 @@ import pages as pg
 st.set_page_config(initial_sidebar_state="collapsed")
 
 pages = ["Analysis", "Risk Scoring", "Loan Approval"]
+
