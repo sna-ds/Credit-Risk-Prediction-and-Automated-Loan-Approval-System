@@ -31,9 +31,9 @@ styles = {
     },
     "active": {
         "background-color": "white",
-        "color": "var(--text-color)",
-        "font-weight": "normal",
-        "padding": "14px",
+        "color": "royalblue",
+        "font-weight": "bold",
+        "padding": "18px",
     },
 }
 
