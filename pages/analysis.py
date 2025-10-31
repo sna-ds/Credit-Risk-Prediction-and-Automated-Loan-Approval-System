@@ -1,114 +1,140 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
+import altair as alt
 
 def show_analysis():
-    # Title
     st.title("Financial Risk Analysis for Loan Approval")
-    st.write("""
-    This page provides an overview of the financial institution’s loan application data.  
-    It aims to uncover applicant patterns, approval trends, and potential risk exposure  
-    before applying predictive models.
-    """)
 
-    # Load dataset
-    df = pd.read_csv("dataset/Loan.csv")
-    df['ApplicationDate'] = pd.to_datetime(df['ApplicationDate'], format='%Y-%m-%d', errors='coerce')
+    @st.cache_data
+    def load_data():
+        url = "https://raw.githubusercontent.com/sna-ds/Credit-Risk-Prediction-and-Automated-Loan-Approval-System/main/dataset/Loan.csv"
+        df = pd.read_csv(url)
+        df['ApplicationDate'] = pd.to_datetime(df['ApplicationDate'], errors='coerce')
+        df = df.dropna(subset=['ApplicationDate'])
 
-    # Convert numeric columns to proper types
-    numeric_cols = ['Age', 'CreditScore', 'DebtToIncomeRatio', 'NetWorth', 'LoanAmount', 'RiskScore']
-    for col in numeric_cols:
-        df[col] = pd.to_numeric(df[col], errors='coerce')
+        # Feature engineering
+        df['LoanStatus'] = df['LoanApproved'].map({0: 'Denied', 1: 'Approved'})
+        df['AgeGroup'] = pd.cut(df['Age'], bins=[0,25,35,45,55,65,120], labels=['<25', '25–34', '35–44', '45–54', '55–64', '65+'], right=False)
+        df['CreditScoreGroup'] = pd.cut(df['CreditScore'], bins=[340, 430, 520, 600, 670, 720], labels=['Very Low', 'Low', 'Medium', 'High', 'Very High'], right=False)
+        df['DTIGroup'] = pd.cut(df['DebtToIncomeRatio'], bins=[0, 0.2, 0.35, 0.5, 1.0], labels=['Low (<20%)', 'Moderate (20–35%)', 'High (35–50%)', 'Critical (>50%)'], right=False)
+        df['MonthlyIncomeGroup'] = pd.cut(df['MonthlyIncome'], bins=[0, 3000, 7000, 12000, 20000, 30000], labels=['Low (<3K)', 'Lower Middle (3–7K)', 'Middle (7–12K)', 'Upper Middle (12–20K)', 'High (>20K)'], right=False)
+        return df
 
-    # KPIs
+    df = load_data()
+
     total_applicants = len(df)
     approved_rate = (df['LoanApproved'] == 1).mean() * 100
     denied = (df['LoanApproved'] == 0).mean() * 100
     default_rate = (df['PreviousLoanDefaults'] == 1).mean() * 100
 
-    col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Total Applicants", total_applicants)
-    col2.metric("% Approved", f"{approved_rate:.2f}%")
-    col3.metric("% Denied", f"{denied:.2f}%")
-    col4.metric("% Default History", f"{default_rate:.2f}%")
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Total Applicants", total_applicants)
+    c2.metric("% Approved", f"{approved_rate:.2f}%")
+    c3.metric("% Denied", f"{denied:.2f}%")
+    c4.metric("% Default History", f"{default_rate:.2f}%")
 
-    # Loan Applications Over Time
+    color_scale = alt.Scale(domain=["Denied", "Approved"], range=["#FF5E0E", "#4169E1"])
+
     st.markdown("<h3 style='color:#ef8b33;'>📈 Loan Applications Over Time</h3>", unsafe_allow_html=True)
-    time_col = "ApplicationDate"
-    applicants_over_time = df.groupby(time_col)['LoanApproved'].count().reset_index()
-    fig1 = px.line(
-        applicants_over_time,
-        x=time_col,
-        y='LoanApproved',
-        title="Applicants Over Time",
-        markers=True
+    app_year = (
+        df.groupby([df['ApplicationDate'].dt.year.rename('Year'), 'LoanStatus'])
+        .size()
+        .reset_index(name='Applicants')
     )
-    st.plotly_chart(fig1, use_container_width=True)
 
-    # Applicant Profile Distribution
-    st.markdown("<h3 style='color:#ef8b33;'>Applicant Profile Distribution</h3>", unsafe_allow_html=True)
+    chart_app = (
+        alt.Chart(app_year)
+        .mark_line(point=True)
+        .encode(
+            x=alt.X('Year:O', title='Year', axis=alt.Axis(labelAngle=0)),
+            y=alt.Y('Applicants:Q', title='Number of Applicants'),
+            color=alt.Color('LoanStatus:N', scale=color_scale, title='Loan Status')
+        )
+        .properties(height=400)
+    )
+    st.altair_chart(chart_app, use_container_width=True)
 
-    # Create columns for side-by-side charts
+    # Applicant Profile Distribution 
+    st.markdown("<h3 style='color:#ef8b33;'>Applicant Profile</h3>", unsafe_allow_html=True)
+
     col1, col2 = st.columns(2)
 
     # Age Distribution
     with col1:
-        fig_age = px.histogram(
-            df,
-            x='Age',
-            color='LoanApproved',
-            title="Age Distribution",
-            barmode='overlay'
+        st.markdown("**Age Distribution**")
+        chart_age = (
+            alt.Chart(df)
+            .mark_bar(opacity=0.85, color="#4169E1")
+            .encode(
+                x=alt.X('AgeGroup:N', title='Age', axis=alt.Axis(labelAngle=0)),
+                y=alt.Y('count()', title='Applicants')
+            )
+            .properties(height=400)
         )
-        st.plotly_chart(fig_age, use_container_width=True)
+        st.altair_chart(chart_age, use_container_width=True)
 
-    # Employment Status Distribution
+
+    # Employment Status
     with col2:
-        fig_emp = px.histogram(
-            df,
-            x='EmploymentStatus',
-            color='LoanApproved',
-            title="Employment Status Distribution"
+        st.markdown("**Employment Status Distribution**")
+        chart_emp = (
+            alt.Chart(df)
+            .mark_bar(opacity=0.8, color="#4169E1")
+            .encode(
+                x=alt.X('EmploymentStatus:N', title='Employment Status', sort='-y', axis=alt.Axis(labelAngle=0)),
+                y=alt.Y('count()', title='Applicants')
+            )
+            .properties(height=400)
         )
-        st.plotly_chart(fig_emp, use_container_width=True)
+        st.altair_chart(chart_emp, use_container_width=True)
 
-    # Next row of numerical charts
+    # Credit, DTI, Monthly Income
     col3, col4, col5 = st.columns(3)
 
+    # Credit Score
     with col3:
-        fig_credit = px.histogram(
-            df,
-            x='CreditScore',
-            color='LoanApproved',
-            title="Credit Score Distribution",
-            barmode='overlay'
+        st.markdown("**Credit Score Distribution**")
+        chart_credit = (
+            alt.Chart(df)
+            .mark_bar(opacity=0.8, color="#4169E1")
+            .encode(
+                x=alt.X('CreditScoreGroup:N', title='Credit Score', axis=alt.Axis(labelAngle=0)),
+                y=alt.Y('count()', title='Applicants')
+            )
+            .properties(height=400)
         )
-        st.plotly_chart(fig_credit, use_container_width=True)
+        st.altair_chart(chart_credit, use_container_width=True)
 
+    # DTI
     with col4:
-        fig_debt = px.histogram(
-            df,
-            x='DebtToIncomeRatio',
-            color='LoanApproved',
-            title="Debt to Income Ratio Distribution",
-            barmode='overlay'
+        st.markdown("**Debt-to-Income Ratio Distribution**")
+        chart_dti = (
+            alt.Chart(df)
+            .mark_bar(opacity=0.8, color="#4169E1")
+            .encode(
+                x=alt.X('DTIGroup:N', title='Ratio', axis=alt.Axis(labelAngle=0)),
+                y=alt.Y('count()', title='Applicants')
+            )
+            .properties(height=400)
         )
-        st.plotly_chart(fig_debt, use_container_width=True)
+        st.altair_chart(chart_dti, use_container_width=True)
 
+    # Monthly Income
     with col5:
-        fig_networth = px.histogram(
-            df,
-            x='NetWorth',
-            color='LoanApproved',
-            title="Net Worth Distribution",
-            barmode='overlay'
+        chart_mon = (
+            alt.Chart(df)
+            .mark_bar(opacity=0.8, color="#4169E1")
+            .encode(
+                x=alt.X('MonthlyIncomeGroup:N', title='Income Range', axis=alt.Axis(labelAngle=0)),
+                y=alt.Y('count()', title='Applicants')
+            )
+            .properties(height=400)
         )
-        st.plotly_chart(fig_networth, use_container_width=True)
+        st.altair_chart(chart_mon, use_container_width=True)
 
     # Approved Loan Exposure
-    st.markdown("---")
     st.markdown("<h3 style='color:#ef8b33;'>Approved Loan Exposure</h3>", unsafe_allow_html=True)
-    approved = df[df['LoanApproved'] == 1]
+    approved = df[df['LoanApproved'] == 1].copy()
     total_amount = approved['LoanAmount'].sum()
     avg_risk = approved['RiskScore'].mean()
 
@@ -116,18 +142,18 @@ def show_analysis():
     col1.metric("Total Amount", f"${total_amount:,.0f}")
     col2.metric("Average Risk", f"{avg_risk:.2f}")
 
-    # Bar chart for total amount by risk score
     exposure = approved.groupby('RiskScore')['LoanAmount'].sum().reset_index()
-    fig = px.bar(
-        exposure,
-        x='RiskScore',
-        y='LoanAmount',
-        title="Total Approved Loan Amount by Risk Score",
-        labels={'LoanAmount': 'Total Approved Loan ($)', 'RiskScore': 'Risk Score'}
+    chart_exposure = (
+        alt.Chart(exposure)
+        .mark_bar(opacity=0.8, color="#4169E1")
+        .encode(
+            x=alt.X('RiskScore:Q', title='Risk Score'),
+            y=alt.Y('LoanAmount:Q', title='Total Approved Loan ($)')
+        )
+        .properties(height=400)
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.altair_chart(chart_exposure, use_container_width=True)
 
-    # Data Preview
     st.markdown("---")
     with st.expander("View Raw Data"):
         st.dataframe(df)
