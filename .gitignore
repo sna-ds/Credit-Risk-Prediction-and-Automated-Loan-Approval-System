@@ -14,3 +14,9 @@ Thumbs.db
 # Ignore temporary files
 *.log
 *.tmp
+
+# Ignore workspace vscode
+.vscode/
+
+# Ignore VSCode Dev Container
+.devcontainer/

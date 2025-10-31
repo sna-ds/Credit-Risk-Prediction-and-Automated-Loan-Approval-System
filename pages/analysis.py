@@ -57,6 +57,12 @@ def show_analysis():
     # Applicant Profile Distribution 
     st.markdown("<h3 style='color:#ef8b33;'>Applicant Profile</h3>", unsafe_allow_html=True)
 
+    category_orders = {
+    'AgeSort': ['<25', '25–34', '35–44', '45–54', '55–64', '65+'],
+    'CreditScoreSort': ['Very Low', 'Low', 'Medium', 'High', 'Very High'],
+    'DTISort': ['Low (<20%)', 'Moderate (20–35%)', 'High (35–50%)', 'Critical (>50%)'],
+    'MonthlyIncomeSort': ['Low (<3K)', 'Lower Middle (3–7K)', 'Middle (7–12K)', 'Upper Middle (12–20K)', 'High (>20K)']}
+
     col1, col2 = st.columns(2)
 
     # Age Distribution
@@ -66,7 +72,7 @@ def show_analysis():
             alt.Chart(df)
             .mark_bar(opacity=0.85, color="#4169E1")
             .encode(
-                x=alt.X('AgeGroup:N', title='Age', axis=alt.Axis(labelAngle=0)),
+                x=alt.X('AgeGroup:N', title='Age', axis=alt.Axis(labelAngle=0), sort=category_orders['AgeSort']),
                 y=alt.Y('count()', title='Applicants')
             )
             .properties(height=400)
@@ -98,7 +104,7 @@ def show_analysis():
             alt.Chart(df)
             .mark_bar(opacity=0.8, color="#4169E1")
             .encode(
-                x=alt.X('CreditScoreGroup:N', title='Credit Score', axis=alt.Axis(labelAngle=0)),
+                x=alt.X('CreditScoreGroup:N', title='Credit Score', axis=alt.Axis(labelAngle=0), sort=category_orders['CreditScoreSort']),
                 y=alt.Y('count()', title='Applicants')
             )
             .properties(height=400)
@@ -112,7 +118,7 @@ def show_analysis():
             alt.Chart(df)
             .mark_bar(opacity=0.8, color="#4169E1")
             .encode(
-                x=alt.X('DTIGroup:N', title='Ratio', axis=alt.Axis(labelAngle=0)),
+                x=alt.X('DTIGroup:N', title='Ratio', axis=alt.Axis(labelAngle=0), sort=category_orders['DTISort']),
                 y=alt.Y('count()', title='Applicants')
             )
             .properties(height=400)
@@ -125,7 +131,7 @@ def show_analysis():
             alt.Chart(df)
             .mark_bar(opacity=0.8, color="#4169E1")
             .encode(
-                x=alt.X('MonthlyIncomeGroup:N', title='Income Range', axis=alt.Axis(labelAngle=0)),
+                x=alt.X('MonthlyIncomeGroup:N', title='Income Range', axis=alt.Axis(labelAngle=0), sort=category_orders['MonthlyIncomeSort']),
                 y=alt.Y('count()', title='Applicants')
             )
             .properties(height=400)
