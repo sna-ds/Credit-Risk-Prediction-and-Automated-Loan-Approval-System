@@ -4,7 +4,11 @@ pandas
 numpy
 matplotlib
 seaborn
+altair
 scikit-learn
 lightgbm
 xgboost
 joblib
+plotly
+shap
+pillow
