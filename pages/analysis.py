@@ -4,12 +4,14 @@ import plotly.express as px
 
 def show_analysis():
     st.title("Financial Risk Analysis for Loan Approval")
-    
-    # delete later
-    st.write("This page provides an overview of the financial institution’s loan application data. It aims to uncover applicant patterns, approval trends, and potential risk exposure before applying predictive models.")
-    
+    st.write("""
+    This page provides an overview of the financial institution’s loan application data.  
+    It aims to uncover applicant patterns, approval trends, and potential risk exposure  
+    before applying predictive models.
+    """)
+
     # Load dataset
-    df = pd.read_csv("/workspaces/Credit-Risk-Prediction-and-Automated-Loan-Approval-System/dataset/Loan.csv")
+    df = pd.read_csv("dataset/Loan.csv")
     df['ApplicationDate'] = pd.to_datetime(df['ApplicationDate'], format='%Y-%m-%d')
     
     # KPIs
@@ -24,49 +26,53 @@ def show_analysis():
     col3.metric("% Denied", f"{denied:.2f}%")
     col4.metric("% Default History", f"{default_rate:.2f}%")
 
+    # Loan Applications & Approval Rate Over Time
     st.markdown("### Loan Applications & Approval Rate Over Time")
-    time_col = "ApplicationDate"  
-    df[time_col] = pd.to_datetime(df[time_col])
+    time_col = "ApplicationDate"
+
     applicants_over_time = df.groupby(time_col)['LoanApproved'].count().reset_index()
     approval_rate_over_time = df.groupby(time_col)['LoanApproved'].mean().reset_index()
 
     fig1 = px.line(applicants_over_time, x=time_col, y='LoanApproved', title="Applicants Over Time")
     fig2 = px.line(approval_rate_over_time, x=time_col, y='LoanApproved', title="Approval Rate Over Time")
-    st.plotly_chart(fig1)
-    st.plotly_chart(fig2)
+    st.plotly_chart(fig1, use_container_width=True)
+    st.plotly_chart(fig2, use_container_width=True)
 
+    # Applicant Profile Distribution
     st.markdown("### Applicant Profile Distribution")
     st.write("Explore applicants’ demographics and credit attributes.")
-    numeric_cols = ['Age', 'CreditScore', 'DebtToIncomeRatio', 'NetWorth']
-    for col in numeric_cols:
-        st.plotly_chart(px.histogram(df, x=col, color='LoanApproved', title=f"{col} Distribution"))
 
+    cols = ['Age', 'EmploymentStatus', 'CreditScore', 'DebtToIncomeRatio', 'NetWorth']
+    for col in cols:
+        fig = px.histogram(df, x=col, color='LoanApproved', title=f"{col} Distribution")
+        st.plotly_chart(fig, use_container_width=True)
+
+    # Approved Loan Exposure
     st.markdown("### Approved Loan Exposure")
-    total_amount = df[df['LoanApproved']==1]['LoanAmount'].sum()
-    avg_risk = df[df['LoanApproved']==1]['RiskScore'].mean()
+    total_amount = df[df['LoanApproved'] == 1]['LoanAmount'].sum()
+    avg_risk = df[df['LoanApproved'] == 1]['RiskScore'].mean()
+
     col1, col2 = st.columns(2)
-    col1.metric("Total Approved Loan Amount", f"${total_amount:,.0f}")
-    col2.metric("Average Risk Score (Approved)", f"{avg_risk:.2f}")
+    col1.metric("Total Amount", f"${total_amount:,.0f}")
+    col2.metric("Average Risk", f"{avg_risk:.2f}")
 
     approved = df[df['LoanApproved'] == 1]
-
     fig = px.bar(
-        approved.groupby('RiskTier')['LoanAmount'].sum().reset_index(),
-        x='RiskTier',
+        approved.groupby('RiskScore')['LoanAmount'].sum().reset_index(),
+        x='RiskScore',
         y='LoanAmount',
-        title="Total Approved Loan Amount by Risk Tier",
-        labels={'LoanAmount': 'Total Approved Loan ($)', 'RiskTier': 'Risk Tier'},
-        color='RiskTier'
+        title="Total Amount by Risk Score",
+        labels={'LoanAmount': 'Total Approved Loan ($)', 'RiskScore': 'Risk Score'}
     )
     st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("---")
-
+    # Data Preview
     with st.expander("View Raw Data"):
         st.dataframe(df)
         st.markdown(f"**Data Dimensions:** {df.shape[0]} rows × {df.shape[1]} columns")
-
-st.write("Data Source: [Financial Risk for Loan Approval — Kaggle Dataset](https://www.kaggle.com/datasets/lorenzozoppelletto/financial-risk-for-loan-approval?select=Loan.csv)")
+    
+    st.caption("Data Source: [Financial Risk for Loan Approval — Kaggle Dataset](https://www.kaggle.com/datasets/lorenzozoppelletto/financial-risk-for-loan-approval?select=Loan.csv)")
     
 
 
