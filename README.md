@@ -3,8 +3,6 @@
 An end-to-end **Machine Learning application** that predicts **Credit Risk Scores** and automates **Loan Approval** using applicants’ financial and behavioral data.
 Deployed via Streamlit, it combines data preprocessing, model training, and explainability (feature importance) in one interactive web app.
 
-## Objectives
-
 ### Business Context
 
 In traditional loan processing, assessing credit risk often relies on manual reviews, which are time-consuming, subjective, and prone to inconsistency.
@@ -40,13 +38,19 @@ This project aims to help financial institutions **automate credit evaluation**,
 - **Model explainability** with feature importance insights.
 
 ### Results
-**Credit Risk Prediction** → XGBoost Regressor, metrics:
+**Credit Risk Prediction (Regression)** 
+- Model: XGBoost Regressor
 - R² : 0.901
+
  *Key Takeaways:* model can explain 90% of the variability in the outcome.
 
-**Loan Approval Decision** → LightGBM Classifier, metrics:
+**Loan Approval Decision (Classification)**
+- Model: LightGBM Classifier
 - AUC-ROC: 0.999998
-- ![Confusion Matrix](images/Confusion_Matrix.png)
+- Confusion Matrix:
+  
+  ![Confusion Matrix](images/Confusion_Matrix.png)
+
  *Key Takeaways:* Very high precision, almost perfect recall (only one false negative case detected) and excellent ability to seperate between approved and declined applicants.
 
 ### Insight & Recommendation
@@ -59,7 +63,7 @@ This project aims to help financial institutions **automate credit evaluation**,
 - Next Steps: 
   *→ Automate credit evaluation workflows, implement explainability dashboards, and establish continuous retraining cycles to adapt to changing borrower behavior and market conditions.*
 
-  ---
+---
 
 ## Skills Demonstrated
 - Machine Learning (Regression & Classification)
@@ -72,4 +76,5 @@ This project aims to help financial institutions **automate credit evaluation**,
 
 ## Explore The Project App
 Click Streamlit app here:
+
 👉 [Credit Risk Prediction and Automated Loan Approval](https://risk-scoring-and-automated-loan-approval.streamlit.app/)
