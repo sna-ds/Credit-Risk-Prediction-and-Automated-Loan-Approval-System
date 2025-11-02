@@ -11,7 +11,7 @@ st.set_page_config(
 )
 
 # Navigation setup
-pages = ["Home", "Analysis", "Prediction", "Risk Scoring", "Loan Approval", "Contact"]
+pages = ["Home", "Analysis", "Prediction", "Contact"]
 
 # Path for logo
 parent_dir = os.path.dirname(os.path.abspath(__file__))
