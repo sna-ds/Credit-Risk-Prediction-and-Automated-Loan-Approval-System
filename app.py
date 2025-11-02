@@ -11,7 +11,7 @@ st.set_page_config(
 )
 
 # Navigation setup
-pages = ["Home", "Analysis", "Risk Scoring", "Loan Approval", "Contact"]
+pages = ["Home", "Analysis", "Prediction", "Risk Scoring", "Loan Approval", "Contact"]
 
 # Path for logo
 parent_dir = os.path.dirname(os.path.abspath(__file__))
@@ -56,6 +56,8 @@ if page == "Home":
     pg.home.show_home()
 elif page == "Analysis":
     pg.analysis.show_analysis()
+elif page == "Prediction":
+    pg.prediction.show_prediction()
 elif page == "Risk Scoring":
     pg.risk_scoring.show_risk_scoring()
 elif page == "Loan Approval":
