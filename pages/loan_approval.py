@@ -14,7 +14,6 @@ def show_loan_approval():
     # Load with joblib
     model = joblib.load('models/lgbm_classifier.pkl')
     scaler_dict = joblib.load('models/clf_scaler.pkl')
-    encoder_dict = joblib.load('models/encoder.pkl')
 
 
     cols = ['RiskScore', 'DebtToIncomeRatio', 'BankruptcyHistory', 'CreditScore', 'NetWorth',
@@ -27,16 +26,16 @@ def show_loan_approval():
     with st.form("loan_form"):
         st.subheader("Enter Applicant Information")
 
-        BankruptcyHistory = st.selectbox("Bankruptcy History", ["No", "Yes"])
-        PreviousLoanDefaults = st.selectbox("Previous Loan Defaults", ["No", "Yes"])
-        CreditCardUtilizationRate = st.number_input("Credit Card Utilization (%)", 0.01, 1.00, 0.30, 0.01)
-        CreditScore = st.number_input("Credit Score", 300, 750, 600)
-        DebtToIncomeRatio = st.number_input("Debt to Income Ratio (%)", 0.00, 1.00, 0.50, 0.01)
-        NetWorth = st.number_input("Net Worth ($)", 1_000.0, 2_603_208.0, 50_000.0, 1_000.0)
-        MonthlyIncome = st.number_input("Monthly Income ($)", 1_250.0, 500_000.0, 5_000.0, 500.0)
-        LoanAmount = st.number_input("Loan Amount ($)", 1_000.0, 1_000_000.0, 10_000.0, 1_000.0)
-        InterestRate = st.number_input("Interest Rate (%)", 0.00, 1.00, 0.40, 0.01)
-        RiskScore = st.number_input("Risk Score", 0, 100, 30)
+        BankruptcyHistory = st.selectbox("Has the applicant ever declared bankruptcy?", ["No", "Yes"])
+        PreviousLoanDefaults = st.selectbox("Has the applicant ever defaulted on a previous loan?", ["No", "Yes"])
+        CreditCardUtilizationRate = st.number_input("What percentage of the applicant’s credit limit is currently used?", 0.01, 1.00, 0.30, 0.01)
+        CreditScore = st.number_input("What is the applicant’s current credit score (from credit bureau)?", 300, 750, 600)
+        DebtToIncomeRatio = st.number_input("What is the ratio of total debt payments to monthly income (Debt to Income Ratio)?", 0.00, 1.00, 0.50, 0.01)
+        NetWorth = st.number_input("What is the applicant’s total ($) net worth (assets minus liabilities)?", 1_000.0, 2_603_208.0, 50_000.0, 1_000.0)
+        MonthlyIncome = st.number_input("What is the applicant’s average monthly income ($)?", 1_250.0, 500_000.0, 5_000.0, 500.0)
+        LoanAmount = st.number_input("How much money is the applicant requesting for this loan ($)?", 1_000.0, 1_000_000.0, 10_000.0, 1_000.0)
+        InterestRate = st.number_input("What is the interest rate (%) offered for this loan?", 0.00, 1.00, 0.40, 0.01)
+        RiskScore = st.number_input("What is the applicant’s current credit risk score?", 0, 100.00, 30.00, 0.01)
 
         submitted = st.form_submit_button("🔮 Predict")
 
