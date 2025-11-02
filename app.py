@@ -58,9 +58,5 @@ elif page == "Analysis":
     pg.analysis.show_analysis()
 elif page == "Prediction":
     pg.prediction.show_prediction()
-elif page == "Risk Scoring":
-    pg.risk_scoring.show_risk_scoring()
-elif page == "Loan Approval":
-    pg.loan_approval.show_loan_approval()
 elif page == "Contact":
     pg.contact.show_contact()
