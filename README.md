@@ -8,37 +8,22 @@ Built with **Streamlit**, this project integrates data preprocessing, model trai
 ## Project Overview
 
 This project demonstrates how **machine learning** can assist financial institutions in evaluating loan applications efficiently and accurately.  
-It includes two main predictive models **(Regression)**  and (Classification)**  
+It includes two main predictive models **(Regression)** and (Classification)**  
 
-This project aims to:
 - Predict the **credit risk score** (0–100) of applicants based on their financial indicators.
 - Automate **loan approval** decisions using the predicted risk score and key credit metrics.
-- Provide **interpretable insights** to support decision transparency.
+- Deploy both models in a **streamlit web app** with explanations using **feature importance**.
 
----
-
-## 🧠 Key Features
-
-- 🧮 **Risk Score Prediction** using a trained **XGBoost Regressor**  
-- 🤖 **Automated Loan Decision** using a **LightGBM Classifier**  
-- 📈 **SHAP-based Interpretations** (textual explanations of key factors)  
-- 🧰 **Data Preprocessing Pipelines** (scaling, encoding, etc.)  
-- 🌐 **Interactive Streamlit UI** for predictions  
-- 🪄 **Model explainability** with feature importance insights  
-
----
-
-## 🧩 Tech Stack
-
-| Category | Technologies |
+| Category | Details |
 |-----------|--------------|
-| Frontend | Streamlit |
-| Backend / ML | Python, scikit-learn, XGBoost, LightGBM, SHAP |
-| Data Processing | pandas, numpy |
-| Visualization | matplotlib, seaborn, SHAP |
-| Deployment | Streamlit / GitHub Codespaces |
+| **Dataset** | [Kaggle - Financial Risk for Loan Approval](https://www.kaggle.com/datasets/lorenzozoppelletto/financial-risk-for-loan-approval/data) |
+| **Deployment** | [Streamlit](https://risk-scoring-and-automated-loan-approval.streamlit.app/) |
 
----
-
-## 🗂️ Project Structure
+** Key Features **
+- **Exploratory Data Analysis (EDA)** to identify **data patterns**, understand **applicant profiles**, and **portfolio exposure** from approved loans.
+- **Data Preprocessing Pipelines**, used **feature selection**, **RobustScaler** for numerical features, **One-Hot-Emcoding** for categorical features.
+- **Risk Score Prediction** using a trained **XGBoost Regressor**. 
+- **Automated Loan Decision** using a **LightGBM Classifier**.
+- **Interactive Streamlit UI** for predictions.  
+- **Model explainability** with feature importance insights.  
 
